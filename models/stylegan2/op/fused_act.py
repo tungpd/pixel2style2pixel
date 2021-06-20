@@ -2,17 +2,22 @@ import os
 
 import torch
 from torch import nn
+from torch.nn import functional as F
 from torch.autograd import Function
 from torch.utils.cpp_extension import load
 
 module_path = os.path.dirname(__file__)
-fused = load(
-    'fused',
-    sources=[
-        os.path.join(module_path, 'fused_bias_act.cpp'),
-        os.path.join(module_path, 'fused_bias_act_kernel.cu'),
-    ],
-)
+try:
+    fused = load(
+        'fused',
+        sources=[
+            os.path.join(module_path, 'fused_bias_act.cpp'),
+            os.path.join(module_path, 'fused_bias_act_kernel.cu'),
+        ],
+    )
+except Exception as e:
+    fused = None
+    print('Warning: Couldnt load custom cuda/cpp code, use cpu only')
 
 
 class FusedLeakyReLUFunctionBackward(Function):
@@ -82,4 +87,13 @@ class FusedLeakyReLU(nn.Module):
 
 
 def fused_leaky_relu(input, bias, negative_slope=0.2, scale=2 ** 0.5):
-    return FusedLeakyReLUFunction.apply(input, bias, negative_slope, scale)
+    if input.device.type == 'cpu':
+        rest_dim = [1] * (input.ndim - bias.ndim - 1)
+        return (
+            F.leaky_relu(
+                input + bias.view(1, bias.shape[0], *rest_dim), negative_slope=0.2
+            )
+            * scale
+        )
+    else:
+        return FusedLeakyReLUFunction.apply(input, bias, negative_slope, scale)
