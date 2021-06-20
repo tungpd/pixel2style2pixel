@@ -1,0 +1,15 @@
+python scripts/train.py \
+--dataset_type=ffhq_encode \
+--exp_dir=/home/tung/data/ffhq_encode \
+--workers=2 \
+--batch_size=2 \
+--test_batch_size=2 \
+--test_workers=2 \
+--val_interval=2500 \
+--save_interval=5000 \
+--encoder_type=GradualStyleEncoder \
+--start_from_latent_avg \
+--lpips_lambda=0.8 \
+--l2_lambda=1 \
+--id_lambda=0.1 \
+--checkpoint_path=/home/tung/data/ffhq_encode/checkpoints/best_model.pt
