@@ -38,7 +38,8 @@ MODEL_PATHS = {
 EXPERIMENT_DATA_ARGS = {
     "ffhq_encode": {
         # "model_path": "pretrained_models/psp_ffhq_encode.pt",
-        "model_path": "/home/tung/data/pretrained_models/psp_ffhq_toonify.pt",
+        # "model_path": "/home/tung/data/pretrained_models/psp_ffhq_toonify.pt",
+        "model_path": "/home/tung/data/pretrained_models/psp_ffhq_encode.pt",
         # "image_path": "notebooks/images/input_img.jpg",
         "image_path": "notebooks/images/IMG_20210320_110540.jpg",
         # "image_path": "/home/tung/data/datasets/CelebAMask-HQ/test_img/18.jpg",
@@ -146,14 +147,14 @@ if experiment_type not in ["celebs_sketch_to_face", "celebs_seg_to_face"]:
 else:
   input_image = original_image
 
-# input_image.resize((512, 512))
+input_image.resize((512, 512))
 
 img_transforms = EXPERIMENT_ARGS['transform']
 transformed_image = img_transforms(input_image)
 
 def run_on_batch(inputs, net, latent_mask=None):
     if latent_mask is None:
-        result_batch = net(inputs.to("cpu").float(), randomize_noise=False, resize=False)
+        result_batch = net(inputs.to("cpu").float(), randomize_noise=False, resize=True)
         # result_batch = net(inputs.to("cpu").float(), randomize_noise=False)
     else:
         result_batch = []
