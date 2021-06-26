@@ -7,7 +7,7 @@ from torch.utils.cpp_extension import load
 module_path = os.path.dirname(__file__)
 try:
     upfirdn2d_op = load(
-        'upfirdn2d',
+        'upfirdn2d_p2p',
         sources=[
             os.path.join(module_path, 'upfirdn2d.cpp'),
             os.path.join(module_path, 'upfirdn2d_kernel.cu'),
